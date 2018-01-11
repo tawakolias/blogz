@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<h1>{{abc.title}}</h1>
+<p>{{abc.body}}</p>
+<p class="author">written by:<a href="/userpost?user={{abc.owner.name}}"> {{ abc.owner.name }}</a></p>
+
+{% endblock %}

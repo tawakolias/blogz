@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<h1>Blog Posts</h1>
+
+
+{% if abc|length > 0 %}
+
+
+  {% for title in abc: %}
+          <a href="/blogpost?id={{title.id}}"><h3> {{ title.title }}</h3></a>
+          <p>{{ title.body }}</p>
+          <p class="author">written by:<a href="/userpost?user={{title.owner.name}}"> {{ title.owner.name }}</a></p>
+          
+  {% endfor %}
+
+{% endif %}
+
+{% endblock %}
