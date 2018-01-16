@@ -39,10 +39,15 @@ def get_user_id():
 def get_user_name():
     return Blog.query.filter_by(owner_id=get_user_id().id).all()
 
+@app.route("/logout", methods=['POST'])
+def logout():
+    del session['user']
+    return redirect("/")
+
 @app.route('/', methods=['POST', 'GET'])
 def blog_users():
     
-    return render_template('home.html',users=get_users(), userid = Person.query.filter_by(name= session['user']).first().id)
+    return render_template('home.html',users=get_users())
 @app.route("/signup", methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -83,27 +88,31 @@ def blog_fun():
 
 @app.route('/blog/newpost', methods=['POST', 'GET'])
 def new_entry():
-    Current_id = Person.query.filter_by(name= session['user']).first().id
 
-    if request.method == 'POST':
-        
-        title = request.form['title']
-        body = request.form['body']
-        owner_id = Current_id
-       
-        if not title:
-            error = "Enter title for your blog"
-            return render_template('/new.html', error = error )
-        elif not body:
-            error = "Enter body for your blog"
-            return render_template('/new.html', error = error )         
-        blog = Blog(title=title, body=body, owner_id = owner_id)
-        db.session.add(blog)
-        db.session.commit()
-        blogurl = "/blogpost?id="+ str(blog.id) 
-        return redirect(blogurl)
+    if 'user' not in session:
+        return redirect("/login")
     else:
-        return render_template('new.html')
+        Current_id = Person.query.filter_by(name= session['user']).first().id
+
+        if request.method == 'POST':
+            
+            title = request.form['title']
+            body = request.form['body']
+            owner_id = Current_id
+        
+            if not title:
+                error = "Enter title for your blog"
+                return render_template('/new.html', error = error )
+            elif not body:
+                error = "Enter body for your blog"
+                return render_template('/new.html', error = error )         
+            blog = Blog(title=title, body=body, owner_id = owner_id)
+            db.session.add(blog)
+            db.session.commit()
+            blogurl = "/blogpost?id="+ str(blog.id) 
+            return redirect(blogurl)
+        else:
+            return render_template('new.html')
           
 @app.route('/blogpost', methods=['GET'])
 def trouble_one():
@@ -120,10 +129,6 @@ def trouble_two():
     abc = Blog.query.filter_by(owner_id=user_id).all()
     return render_template('userblog.html', abc=abc)
 
-@app.route("/logout", methods=['POST'])
-def logout():
-    del session['user']
-    return redirect("/")
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RU'
 if __name__ == '__main__':
